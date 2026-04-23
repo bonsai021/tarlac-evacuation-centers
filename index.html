@@ -171,21 +171,26 @@
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
 
         function getIconForType(type) {
-            let svgPath = '<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>'; 
+            let svgPath = '<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>'; // Default Home
+            let bgColor = '#3b82f6'; // Default Blue (Evacuation Center)
             
             if (type === 'SCHOOL') {
                 svgPath = '<path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>';
-            // UPDATED to 'CHURCH' instead of 'CHURCHES'
+                bgColor = '#f59e0b'; // Amber/Yellow
             } else if (type === 'CHURCH') {
                 svgPath = '<path d="M13 2h-2v3H8v2h3v4H7v2h4v7h2v-7h4v-2h-4V7h3V5h-3V2z"/>';
+                bgColor = '#8b5cf6'; // Purple
             } else if (type === 'COVERED COURT') {
-                svgPath = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 7h2v4h4v2h-4v4h-2v-4H7v-2h4V7z"/>';
+                // New Dome/Arched Roof SVG for Covered Court
+                svgPath = '<path d="M12 2C6.5 2 2 6.5 2 12v10h20V12c0-5.5-4.5-10-10-10zm-2 18H6v-8h4v8zm10 0h-4v-8h4v8z"/>';
+                bgColor = '#10b981'; // Emerald Green
             } else if (type === 'BARANGAY HALL') {
                 svgPath = '<path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-8h8v8z"/>';
+                bgColor = '#ef4444'; // Red
             }
 
             return L.divIcon({
-                html: `<div style="background-color: var(--primary); color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                html: `<div style="background-color: ${bgColor}; color: white; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="white">${svgPath}</svg>
                        </div>`,
                 className: 'custom-evac-icon',
@@ -222,7 +227,7 @@
                         var latKey = keys.find(k => k.includes('LATITUDE'));
                         var lngKey = keys.find(k => k.includes('LONGITUDE'));
                         
-                        if (!latKey || !lngKey) return; // Skip if no coordinate headers
+                        if (!latKey || !lngKey) return; 
 
                         var lat = parseFloat(cleanRow[latKey]);
                         var lng = parseFloat(cleanRow[lngKey]);

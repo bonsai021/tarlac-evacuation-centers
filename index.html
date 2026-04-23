@@ -19,7 +19,7 @@
         }
         #map-wrapper {
             position: relative;
-            flex: 1; /* Allows the map to take up all remaining space */
+            height: 70vh; /* Forces the map to take up exactly 70% of the screen */
             width: 100%;
         }
         #map {
@@ -55,7 +55,7 @@
             background-color: #1a252f;
         }
         #sheet-container {
-            height: 35vh; /* Takes up 35% of the screen height */
+            height: 30vh; /* Forces the sheet to take up the remaining 30% */
             width: 100%;
             border-top: 3px solid #2c3e50;
             background: #f4f4f4;
@@ -155,6 +155,13 @@
                 searchLocation();
             }
         });
+
+        // FIX FOR "HALF MAP" GLITCH
+        // This forces the map to recalculate its bounds after the page layout settles.
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 500);
+
     </script>
 </body>
 </html>

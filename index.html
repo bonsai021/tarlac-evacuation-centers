@@ -68,6 +68,7 @@
             border-radius: 16px; font-size: 15px; color: var(--text-main);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
             border: 1px solid var(--border); text-align: center; line-height: 1.6;
+            max-width: 600px;
         }
 
         /* Clean Leaflet Popup Styling */
@@ -108,11 +109,11 @@
 <body>
 
     <div id="loading">
-        <div style="margin-bottom: 8px;">
+        <div id="spinner-container" style="margin-bottom: 8px;">
             <svg style="animation: spin 1s linear infinite; height: 24px; width: 24px; color: #0f172a; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         </div>
-        <strong>Syncing Live Data</strong><br>
-        <span style="color: #64748b; font-size: 13px;">Pulling from Google Sheets...</span>
+        <strong id="loading-title">Syncing Live Data</strong><br>
+        <span id="loading-desc" style="color: #64748b; font-size: 13px;">Pulling from Google Sheets...</span>
         <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
     </div>
 
@@ -129,16 +130,15 @@
     <script>
         // Error Handler
         window.onerror = function(message, source, lineno) {
-            document.getElementById('loading').innerHTML = "❌ <b style='color: #ef4444;'>CRITICAL ERROR:</b><br>" + message + "<br><br><span style='color: #64748b; font-size:13px;'>Check line " + lineno + " for deleted quotes.</span>";
+            document.getElementById('spinner-container').style.display = 'none';
+            document.getElementById('loading-title').innerHTML = "❌ <b style='color: #ef4444;'>CRITICAL ERROR:</b>";
+            document.getElementById('loading-desc').innerHTML = message + "<br><br>Check line " + lineno + " for deleted quotes.";
             return false;
         };
 
         // Initialize Map
         var map = L.map('map', { zoomControl: false }).setView([15.58, 120.59], 10);
-        
-        // Reposition standard zoom control
         L.control.zoom({ position: 'topleft' }).addTo(map);
-
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
             maxZoom: 19,
             attribution: '© OpenStreetMap | © CARTO'
@@ -149,11 +149,19 @@
         // =========================================================================
         var sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd_7XwY0Z_Dzs9THcJrXePJOdcchsr8XRGJ3B1E05RJR3j6Z-Y_8lak51-tM-znL2CIoOWwRP83tnM/pubhtml?gid=1609154454&single=true";
         
+        // --- AUTO-HEALING LINK ---
+        // Automatically converts a Webpage link into a raw CSV data link
+        if (sheetCsvUrl.includes("pubhtml")) {
+            sheetCsvUrl = sheetCsvUrl.replace("pubhtml", "pub?output=csv");
+        }
+        
         var markers = [];
 
         // Validate Link
         if (sheetCsvUrl === "YOUR_CSV_PUBLISH_LINK_HERE") {
-            document.getElementById('loading').innerHTML = "⚠️ <b>Action Required:</b><br><span style='color: #64748b; font-size: 14px;'>Please paste your Google Sheets CSV link into line 147 of the code.</span>";
+            document.getElementById('spinner-container').style.display = 'none';
+            document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 147 of the code.";
         } 
         else {
             // Fetch Data
@@ -167,27 +175,31 @@
                     
                     data.forEach(function(row) {
                         
-                        // ROBUST FUZZY MATCHING
-                        // Finds the right column even if Google Sheets adds # symbols or hidden spaces
-                        var keys = Object.keys(row);
-                        var latKey = keys.find(k => k.toUpperCase().includes('LATITUDE'));
-                        var lngKey = keys.find(k => k.toUpperCase().includes('LONGITUDE'));
-                        var locKey = keys.find(k => k.toUpperCase().includes('LOCATION'));
-                        var munKey = keys.find(k => k.toUpperCase().includes('MUNICAPLITY') || k.toUpperCase().includes('MUNICIPALITY'));
-                        var totalCapKey = keys.find(k => k.toUpperCase().includes('TOTAL CAPACITY'));
-                        var curCapKey = keys.find(k => k.toUpperCase().includes('CURRENT_CAP'));
-                        var statusKey = keys.find(k => k.toUpperCase().includes('STATUS'));
+                        // Strip out completely all invisible characters and # symbols from the headers
+                        var cleanRow = {};
+                        for (var key in row) {
+                            var cleanKey = key.replace(/[^a-zA-Z0-9 ]/g, "").trim().toUpperCase();
+                            cleanRow[cleanKey] = row[key];
+                        }
+                        
+                        var keys = Object.keys(cleanRow);
+                        
+                        var latKey = keys.find(k => k.includes('LATITUDE'));
+                        var lngKey = keys.find(k => k.includes('LONGITUDE'));
+                        var locKey = keys.find(k => k.includes('LOCATION'));
+                        var munKey = keys.find(k => k.includes('MUNICAPLITY') || k.includes('MUNICIPALITY'));
+                        var totalCapKey = keys.find(k => k.includes('TOTAL CAPACITY'));
+                        var curCapKey = keys.find(k => k.includes('CURRENTCAP') || k.includes('CURRENT CAP'));
+                        var statusKey = keys.find(k => k.includes('STATUS'));
 
-                        // Extract data using the safely found keys
-                        var lat = latKey ? parseFloat(row[latKey]) : NaN;
-                        var lng = lngKey ? parseFloat(row[lngKey]) : NaN;
-                        var name = (locKey && row[locKey]) ? row[locKey] : "Unknown Facility";
-                        var mun = (munKey && row[munKey]) ? row[munKey] : "Unknown";
-                        var totalCap = (totalCapKey && row[totalCapKey]) ? row[totalCapKey] : "0";
-                        var currentCap = (curCapKey && row[curCapKey]) ? row[curCapKey] : "0";
-                        var status = (statusKey && row[statusKey]) ? row[statusKey].toUpperCase().trim() : "UNKNOWN";
+                        var lat = latKey ? parseFloat(cleanRow[latKey]) : NaN;
+                        var lng = lngKey ? parseFloat(cleanRow[lngKey]) : NaN;
+                        var name = (locKey && cleanRow[locKey]) ? cleanRow[locKey] : "Unknown Facility";
+                        var mun = (munKey && cleanRow[munKey]) ? cleanRow[munKey] : "Unknown";
+                        var totalCap = (totalCapKey && cleanRow[totalCapKey]) ? cleanRow[totalCapKey] : "0";
+                        var currentCap = (curCapKey && cleanRow[curCapKey]) ? cleanRow[curCapKey] : "0";
+                        var status = (statusKey && cleanRow[statusKey]) ? cleanRow[statusKey].toUpperCase().trim() : "UNKNOWN";
 
-                        // Plot only if coordinates exist
                         if (!isNaN(lat) && !isNaN(lng)) {
                             validPointsPlotted++;
                             
@@ -217,15 +229,29 @@
                         }
                     });
 
-                    // If fuzzy matching STILL fails to find coordinates, trigger the warning
+                    // X-RAY DIAGNOSTIC: Prints exactly what is going wrong if it fails again
                     if (validPointsPlotted === 0) {
-                        document.getElementById('loading').innerHTML = "⚠️ <b>Data Formatting Issue</b><br><span style='color: #64748b; font-size: 14px;'>Check that your headers match: LATITUDE and LONGITUDE.</span>";
+                        var headersFound = data.length > 0 ? Object.keys(data[0]).join(", ") : "No columns found";
+                        var htmlWarning = headersFound.includes("<") ? "<br><br><b style='color:#ef4444;'>ERROR: You pasted a standard Share link. You must use File > Share > Publish to Web.</b>" : "";
+                        
+                        document.getElementById('spinner-container').style.display = 'none';
+                        document.getElementById('loading-title').innerHTML = "⚠️ <b>Data Connection Failed</b>";
+                        document.getElementById('loading-desc').innerHTML = `
+                            We connected to your link, but could not read the coordinates.<br><br>
+                            <b>Here are the exact headers the code saw:</b><br>
+                            <div style='background:#f1f5f9; padding:8px; border-radius:4px; margin-top:8px; font-family:monospace; color:#ef4444; word-wrap:break-word; font-size:12px;'>
+                                ${headersFound}
+                            </div>
+                            ${htmlWarning}
+                        `;
                     } else {
                         document.getElementById('loading').style.display = 'none';
                     }
                 },
                 error: function(err) {
-                    document.getElementById('loading').innerHTML = "❌ <b>Connection Blocked</b><br><span style='color: #64748b; font-size: 14px;'>Ensure the sheet is public and you used the CSV format link.</span>";
+                    document.getElementById('spinner-container').style.display = 'none';
+                    document.getElementById('loading-title').innerHTML = "❌ <b>Network Blocked</b>";
+                    document.getElementById('loading-desc').innerHTML = "Could not reach the link. Make sure the sheet is public.";
                 }
             });
         }

@@ -13,7 +13,7 @@
     
     <style>
         :root {
-            --primary: #0f172a;       /* Dark Slate */
+            --primary: #0f172a;
             --primary-hover: #334155;
             --surface: #ffffff;
             --text-main: #0f172a;
@@ -136,7 +136,7 @@
         // Initialize Map
         var map = L.map('map', { zoomControl: false }).setView([15.58, 120.59], 10);
         
-        // Reposition standard zoom control to sit below our custom search bar
+        // Reposition standard zoom control
         L.control.zoom({ position: 'topleft' }).addTo(map);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
@@ -166,35 +166,44 @@
                     var validPointsPlotted = 0;
                     
                     data.forEach(function(row) {
-                        var lat = parseFloat(row['LATITUDE']);
-                        var lng = parseFloat(row['LONGITUDE']);
-                        var name = row['LOCATION'] || "Unknown Facility";
-                        var mun = row['MUNICAPLITY/CITY'] || "Unknown";
-                        var totalCap = row['TOTAL CAPACITY'] || "0";
-                        var currentCap = row['CURRENT_CAP'] || "0";
-                        var status = (row['Status'] || "Unknown").toUpperCase();
+                        
+                        // ROBUST FUZZY MATCHING
+                        // Finds the right column even if Google Sheets adds # symbols or hidden spaces
+                        var keys = Object.keys(row);
+                        var latKey = keys.find(k => k.toUpperCase().includes('LATITUDE'));
+                        var lngKey = keys.find(k => k.toUpperCase().includes('LONGITUDE'));
+                        var locKey = keys.find(k => k.toUpperCase().includes('LOCATION'));
+                        var munKey = keys.find(k => k.toUpperCase().includes('MUNICAPLITY') || k.toUpperCase().includes('MUNICIPALITY'));
+                        var totalCapKey = keys.find(k => k.toUpperCase().includes('TOTAL CAPACITY'));
+                        var curCapKey = keys.find(k => k.toUpperCase().includes('CURRENT_CAP'));
+                        var statusKey = keys.find(k => k.toUpperCase().includes('STATUS'));
 
+                        // Extract data using the safely found keys
+                        var lat = latKey ? parseFloat(row[latKey]) : NaN;
+                        var lng = lngKey ? parseFloat(row[lngKey]) : NaN;
+                        var name = (locKey && row[locKey]) ? row[locKey] : "Unknown Facility";
+                        var mun = (munKey && row[munKey]) ? row[munKey] : "Unknown";
+                        var totalCap = (totalCapKey && row[totalCapKey]) ? row[totalCapKey] : "0";
+                        var currentCap = (curCapKey && row[curCapKey]) ? row[curCapKey] : "0";
+                        var status = (statusKey && row[statusKey]) ? row[statusKey].toUpperCase().trim() : "UNKNOWN";
+
+                        // Plot only if coordinates exist
                         if (!isNaN(lat) && !isNaN(lng)) {
                             validPointsPlotted++;
                             
-                            // Determine badge color
                             var badgeClass = (status === "AVAILABLE") ? "badge-available" : "badge-default";
 
-                            // Modern HTML Card for Popup
                             var popupText = `
                                 <div>
                                     <span class="card-title">${name}</span>
-                                    
                                     <div class="card-row">
                                         <span class="card-label">Municipality</span>
                                         <span class="card-value">${mun}</span>
                                     </div>
-                                    
                                     <div class="card-row">
                                         <span class="card-label">Capacity (Cur / Tot)</span>
                                         <span class="card-value">${currentCap} <span style="color:#cbd5e1; margin:0 4px;">/</span> ${totalCap}</span>
                                     </div>
-                                    
                                     <div class="card-row" style="padding-top: 12px; margin-top: 4px;">
                                         <span class="card-label">Status</span>
                                         <span class="badge ${badgeClass}">${status}</span>
@@ -208,6 +217,7 @@
                         }
                     });
 
+                    // If fuzzy matching STILL fails to find coordinates, trigger the warning
                     if (validPointsPlotted === 0) {
                         document.getElementById('loading').innerHTML = "⚠️ <b>Data Formatting Issue</b><br><span style='color: #64748b; font-size: 14px;'>Check that your headers match: LATITUDE and LONGITUDE.</span>";
                     } else {

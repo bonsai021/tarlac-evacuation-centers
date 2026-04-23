@@ -14,12 +14,12 @@
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            height: 100vh; /* Fills the whole browser window */
+            height: 100vh;
             overflow: hidden;
         }
         #map-wrapper {
             position: relative;
-            height: 70vh; /* Forces the map to take up exactly 70% of the screen */
+            height: 70vh;
             width: 100%;
         }
         #map {
@@ -30,7 +30,7 @@
         #search-container {
             position: absolute;
             top: 20px;
-            left: 60px; /* Positioned right of map zoom controls */
+            left: 60px;
             z-index: 1000;
             background: white;
             padding: 10px;
@@ -55,7 +55,7 @@
             background-color: #1a252f;
         }
         #sheet-container {
-            height: 30vh; /* Forces the sheet to take up the remaining 30% */
+            height: 30vh;
             width: 100%;
             border-top: 3px solid #2c3e50;
             background: #f4f4f4;
@@ -85,83 +85,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script>
-        // Initialize the map, centered roughly around Tarlac
         var map = L.map('map').setView([15.58, 120.59], 10);
 
-        // Add OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Evacuation Center Data extracted from the spreadsheet
-        var evacuationCenters = [
-            { mun: "Lapaz", name: "PAGCOR Multi-Purpose Building and Municipal Evacuation Center/ Brgy. Rizal, La Paz", lat: 15.434096, lng: 120.727424, cap: 150, status: "AVAILABLE" },
-            { mun: "Province of Tarlac", name: "Provincial Multi-Purpose Evacuation Center/ Brgy. San Isidro, Tarlac City", lat: 15.494798, lng: 120.577911, cap: 530, status: "AVAILABLE" },
-            { mun: "City of Tarlac (Capital)", name: "Tibag Evacuation Center/ Brgy. Tibag, Tarlac City", lat: 15.490824, lng: 120.569726, cap: 530, status: "AVAILABLE" },
-            { mun: "City of Tarlac (Capital)", name: "Baras-Baras Evacuation Center/ Brgy. Baras-Baras, Tarlac City", lat: 15.521644, lng: 120.567399, cap: 165, status: "AVAILABLE" },
-            { mun: "San Clemente", name: "San Clemente Municipal Evacuation Center/ Brgy. Poblacion Norte, San Clemente", lat: 15.714959, lng: 120.358695, cap: 30, status: "AVAILABLE" },
-            { mun: "Paniqui", name: "Bacao Evacuation Center/ Sitio Bacao, Brgy. Salumague, Paniqui", lat: 15.686438, lng: 120.559574, cap: 1000, status: "AVAILABLE" },
-            { mun: "City of Tarlac (Capital)", name: "San Isidro Evacuation Center/ Brgy. San Isidro, Paniqui", lat: 15.701675, lng: 120.57702, cap: 800, status: "AVAILABLE" },
-            { mun: "Moncada", name: "Sta. Lucia East", lat: 15.698746, lng: 120.584701, cap: 800, status: "AVAILABLE" },
-            { mun: "Moncada", name: "Sta. Lucia West", lat: 15.700413, lng: 120.564336, cap: 800, status: "AVAILABLE" }
-        ];
-
-        // Array to hold marker references for the search function
-        var markers = [];
-
-        // Loop through data and add markers to the map
-        evacuationCenters.forEach(function(center) {
-            var popupContent = `
-                <b>${center.name}</b><br>
-                Municipality: ${center.mun}<br>
-                Capacity: ${center.cap}<br>
-                Status: <span style="color:green; font-weight:bold;">${center.status}</span>
-            `;
-            
-            var marker = L.marker([center.lat, center.lng]).addTo(map).bindPopup(popupContent);
-            
-            // Store data inside the marker object for searching
-            marker.featureData = center;
-            markers.push(marker);
-        });
-
-        // Search Functionality
-        function searchLocation() {
-            var query = document.getElementById('search-input').value.toLowerCase();
-            var found = false;
-
-            for (var i = 0; i < markers.length; i++) {
-                var data = markers[i].featureData;
-                
-                // Check if search query matches the municipality or specific location name
-                if (data.name.toLowerCase().includes(query) || data.mun.toLowerCase().includes(query)) {
-                    // Zoom to the location and open the popup
-                    map.setView([data.lat, data.lng], 14);
-                    markers[i].openPopup();
-                    found = true;
-                    break; // Stop after first match
-                }
-            }
-
-            if (!found && query.trim() !== "") {
-                alert("Location not found. Try searching for a municipality like 'Moncada' or 'Paniqui'.");
-            }
-        }
-
-        // Add Enter key support for the search bar
-        document.getElementById('search-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                searchLocation();
-            }
-        });
-
-        // FIX FOR "HALF MAP" GLITCH
-        // This forces the map to recalculate its bounds after the page layout settles.
-        setTimeout(function() {
-            map.invalidateSize();
-        }, 500);
-
-    </script>
-</body>
-</html>
+        }).addTo

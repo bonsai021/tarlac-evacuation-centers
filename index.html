@@ -27,6 +27,8 @@
             margin: 0; padding: 0; height: 100%; width: 100%; 
             font-family: 'Inter', sans-serif; overflow: hidden; 
             background-color: #f8fafc;
+            -webkit-font-smoothing: antialiased; /* Makes fonts look smoother/crisper */
+            -moz-osx-font-smoothing: grayscale;
         }
         
         #map { height: 100vh; width: 100vw; z-index: 1; }
@@ -41,7 +43,6 @@
             backdrop-filter: blur(4px);
         }
 
-        /* Dropdown Styling */
         #typeFilter {
             padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; 
             font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
@@ -49,9 +50,7 @@
             transition: all 0.2s ease;
         }
 
-        #typeFilter:focus {
-            border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff;
-        }
+        #typeFilter:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
         
         #searchInput { 
             padding: 6px 10px; width: 180px; 
@@ -61,9 +60,7 @@
             background: rgba(255, 255, 255, 0.8);
         }
         
-        #searchInput:focus {
-            border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff;
-        }
+        #searchInput:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
         
         #search-box button { 
             padding: 6px 14px; background-color: var(--primary); 
@@ -89,26 +86,55 @@
             max-width: 600px;
         }
 
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); padding: 0;
+        /* -------------------------------------------
+           Leaflet Overrides: Popups & Zoom Controls
+        ---------------------------------------------- */
+        
+        /* Smaller, Smoother Zoom Controls */
+        .leaflet-bar {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 6px !important;
+            overflow: hidden;
         }
-        .leaflet-popup-content { margin: 20px; font-family: 'Inter', sans-serif; }
+        .leaflet-touch .leaflet-bar a, .leaflet-bar a {
+            width: 26px !important;
+            height: 26px !important;
+            line-height: 26px !important;
+            font-size: 15px !important;
+            font-weight: 500 !important;
+            color: var(--text-main) !important;
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(4px) !important;
+            transition: all 0.2s ease !important;
+        }
+        .leaflet-bar a:hover {
+            background-color: var(--surface) !important;
+            color: var(--primary) !important;
+        }
+        .leaflet-control-zoom-in { border-bottom: 1px solid var(--border) !important; }
+
+        /* Smaller, Cleaner Popup Styling */
+        .leaflet-popup-content-wrapper {
+            border-radius: 10px; box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.15); padding: 0;
+        }
+        .leaflet-popup-content { margin: 12px 14px; font-family: 'Inter', sans-serif; }
         
         .card-title {
-            font-size: 16px; font-weight: 700; color: var(--text-main);
-            margin-bottom: 12px; display: block; line-height: 1.3;
+            font-size: 13px; font-weight: 600; color: var(--text-main);
+            margin-bottom: 8px; display: block; line-height: 1.3;
         }
         .card-row {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px;
+            padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 11px;
         }
         .card-row:last-child { border-bottom: none; }
         .card-label { color: var(--text-muted); font-weight: 500; }
-        .card-value { color: var(--text-main); font-weight: 600; text-align: right; }
+        .card-value { color: var(--text-main); font-weight: 500; text-align: right; }
         
         .badge {
-            display: inline-block; padding: 4px 10px; border-radius: 9999px;
-            font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            display: inline-block; padding: 3px 8px; border-radius: 9999px;
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .badge-available { background-color: var(--success-bg); color: var(--success-text); }
         .badge-default { background-color: #f1f5f9; color: #475569; }
@@ -194,7 +220,7 @@
         if (sheetCsvUrl === "YOUR_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
-            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 157 of the code.";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 180 of the code.";
         } 
         else {
             Papa.parse(sheetCsvUrl, {
@@ -218,7 +244,7 @@
                         var lngKey = keys.find(k => k.includes('LONGITUDE'));
                         var locKey = keys.find(k => k.includes('LOCATION'));
                         var munKey = keys.find(k => k.includes('MUNICAPLITY') || k.includes('MUNICIPALITY'));
-                        var typeKey = keys.find(k => k.includes('TYPE')); // Capturing the Type column
+                        var typeKey = keys.find(k => k.includes('TYPE')); 
                         var totalCapKey = keys.find(k => k.includes('TOTAL CAPACITY'));
                         var curCapKey = keys.find(k => k.includes('CURRENTCAP') || k.includes('CURRENT CAP'));
                         var statusKey = keys.find(k => k.includes('STATUS'));
@@ -251,19 +277,21 @@
                                         <span class="card-label">Capacity (Cur / Tot)</span>
                                         <span class="card-value">${currentCap} <span style="color:#cbd5e1; margin:0 4px;">/</span> ${totalCap}</span>
                                     </div>
-                                    <div class="card-row" style="padding-top: 12px; margin-top: 4px;">
+                                    <div class="card-row">
+                                        <span class="card-label">Coordinates</span>
+                                        <span class="card-value" style="font-family: monospace; color: var(--text-muted);">${lat.toFixed(5)}, ${lng.toFixed(5)}</span>
+                                    </div>
+                                    <div class="card-row" style="padding-top: 10px; margin-top: 4px;">
                                         <span class="card-label">Status</span>
                                         <span class="badge ${badgeClass}">${status}</span>
                                     </div>
                                 </div>
                             `;
 
-                            var marker = L.marker([lat, lng], { icon: evacIcon }).bindPopup(popupText, { minWidth: 260 });
+                            // minWidth adjusted to 220 for a smaller box
+                            var marker = L.marker([lat, lng], { icon: evacIcon }).bindPopup(popupText, { minWidth: 220 });
                             
-                            // Save data inside marker for the filter system
                             marker.searchData = { name: name, mun: mun, lat: lat, lng: lng, type: facilityType };
-                            
-                            // Add marker to map and array
                             marker.addTo(map);
                             markers.push(marker);
                         }
@@ -295,7 +323,6 @@
             });
         }
 
-        // New Combined Filter & Search Engine
         function filterMap() {
             var query = document.getElementById('searchInput').value.toLowerCase();
             var selectedType = document.getElementById('typeFilter').value;
@@ -304,28 +331,20 @@
             
             markers.forEach(function(marker) {
                 var item = marker.searchData;
-                
-                // Check if marker matches text search
                 var matchesText = item.name.toLowerCase().includes(query) || item.mun.toLowerCase().includes(query);
-                
-                // Check if marker matches dropdown category
                 var matchesType = (selectedType === "ALL") || (item.type === selectedType);
 
-                // Only show marker if it matches BOTH text search and category filter
                 if (matchesText && matchesType) {
-                    map.addLayer(marker); // Ensure it is on the map
+                    map.addLayer(marker);
                     foundAny = true;
-                    
-                    // Save the first match we find so we can zoom to it
                     if (!firstMatch && query.trim() !== "") {
                         firstMatch = marker;
                     }
                 } else {
-                    map.removeLayer(marker); // Hide it from the map
+                    map.removeLayer(marker);
                 }
             });
 
-            // Zoom to the first text match if user typed something
             if (firstMatch) {
                 map.setView([firstMatch.searchData.lat, firstMatch.searchData.lng], 14);
                 firstMatch.openPopup();
@@ -335,7 +354,6 @@
             }
         }
 
-        // Allow pressing Enter to search
         document.getElementById('searchInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') filterMap();
         });

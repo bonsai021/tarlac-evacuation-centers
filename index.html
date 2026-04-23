@@ -15,6 +15,8 @@
         :root {
             --primary: #0f172a;
             --primary-hover: #334155;
+            --accent: #3b82f6;       /* New Modern Blue for Buttons */
+            --accent-hover: #2563eb;
             --surface: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
@@ -33,42 +35,49 @@
         
         #map { height: 100vh; width: 100vw; z-index: 1; }
         
+        /* Modern Floating Panel */
         #search-box { 
             position: absolute; top: 20px; left: 60px; z-index: 999; 
             background: rgba(255, 255, 255, 0.5); padding: 8px; 
             border-radius: 8px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            display: flex; gap: 6px; border: 1px solid var(--border);
+            display: flex; gap: 8px; border: 1px solid var(--border);
             backdrop-filter: blur(4px);
+            align-items: center; /* Ensures perfect vertical alignment */
         }
 
-        #typeFilter {
-            padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
-            background: rgba(255, 255, 255, 0.8); color: var(--text-main); cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        #typeFilter:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
-        
-        #searchInput { 
-            padding: 6px 10px; width: 180px; 
+        #typeFilter, #searchInput {
+            height: 32px; /* Locked height for perfect alignment */
+            padding: 0 10px; 
             border: 1px solid var(--border); border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px;
-            transition: all 0.2s ease; outline: none;
-            background: rgba(255, 255, 255, 0.8);
+            font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+            background: rgba(255, 255, 255, 0.8); color: var(--text-main);
+            transition: all 0.2s ease; box-sizing: border-box;
+        }
+
+        #typeFilter { cursor: pointer; }
+        #typeFilter:focus, #searchInput:focus { 
+            border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; 
         }
         
-        #searchInput:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
+        #searchInput { width: 180px; }
         
+        /* New Smoother, Aligned Button */
         #search-box button { 
-            padding: 6px 14px; background-color: var(--primary); 
+            height: 32px; /* Locked height to match inputs */
+            padding: 0 16px; 
+            background-color: var(--accent); /* Modern Blue instead of Black */
             color: white; border: none; border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
-            cursor: pointer; transition: background-color 0.2s ease;
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; /* Smoother, bolder font */
+            cursor: pointer; transition: all 0.2s ease; box-sizing: border-box;
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.3); /* Subtle blue glow/shadow */
         }
         
-        #search-box button:hover { background-color: var(--primary-hover); }
+        #search-box button:hover { 
+            background-color: var(--accent-hover); 
+            transform: translateY(-1px); /* Smooth lifting effect on hover */
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
 
         #compass {
             position: absolute; top: 20px; right: 20px; z-index: 999;
@@ -171,22 +180,21 @@
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
 
         function getIconForType(type) {
-            let svgPath = '<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>'; // Default Home
-            let bgColor = '#3b82f6'; // Default Blue (Evacuation Center)
+            let svgPath = '<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>'; 
+            let bgColor = '#3b82f6'; 
             
             if (type === 'SCHOOL') {
                 svgPath = '<path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>';
-                bgColor = '#f59e0b'; // Amber/Yellow
+                bgColor = '#f59e0b'; 
             } else if (type === 'CHURCH') {
                 svgPath = '<path d="M13 2h-2v3H8v2h3v4H7v2h4v7h2v-7h4v-2h-4V7h3V5h-3V2z"/>';
-                bgColor = '#8b5cf6'; // Purple
+                bgColor = '#8b5cf6'; 
             } else if (type === 'COVERED COURT') {
-                // New Dome/Arched Roof SVG for Covered Court
                 svgPath = '<path d="M12 2C6.5 2 2 6.5 2 12v10h20V12c0-5.5-4.5-10-10-10zm-2 18H6v-8h4v8zm10 0h-4v-8h4v8z"/>';
-                bgColor = '#10b981'; // Emerald Green
+                bgColor = '#10b981'; 
             } else if (type === 'BARANGAY HALL') {
                 svgPath = '<path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-8h8v8z"/>';
-                bgColor = '#ef4444'; // Red
+                bgColor = '#ef4444'; 
             }
 
             return L.divIcon({

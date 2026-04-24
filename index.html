@@ -15,6 +15,8 @@
         :root {
             --primary: #0f172a;
             --primary-hover: #334155;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
             --surface: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
@@ -38,37 +40,62 @@
             background: rgba(255, 255, 255, 0.5); padding: 8px; 
             border-radius: 8px; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            display: flex; gap: 6px; border: 1px solid var(--border);
+            display: flex; gap: 8px; border: 1px solid var(--border);
             backdrop-filter: blur(4px);
+            align-items: center;
         }
 
-        #typeFilter {
-            padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
-            background: rgba(255, 255, 255, 0.8); color: var(--text-main); cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        #typeFilter:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
-        
-        #searchInput { 
-            padding: 6px 10px; width: 180px; 
+        #typeFilter, #searchInput {
+            height: 32px; 
+            padding: 0 10px; 
             border: 1px solid var(--border); border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px;
-            transition: all 0.2s ease; outline: none;
-            background: rgba(255, 255, 255, 0.8);
+            font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
+            background: rgba(255, 255, 255, 0.8); color: var(--text-main);
+            transition: all 0.2s ease; box-sizing: border-box;
+        }
+
+        #typeFilter { cursor: pointer; }
+        #typeFilter:focus, #searchInput:focus { 
+            border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; 
         }
         
-        #searchInput:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
+        #searchInput { width: 180px; }
         
         #search-box button { 
-            padding: 6px 14px; background-color: var(--primary); 
+            height: 32px; 
+            padding: 0 16px; 
+            background-color: var(--accent); 
             color: white; border: none; border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
-            cursor: pointer; transition: background-color 0.2s ease;
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; 
+            cursor: pointer; transition: all 0.2s ease; box-sizing: border-box;
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.3); 
         }
         
-        #search-box button:hover { background-color: var(--primary-hover); }
+        #search-box button:hover { 
+            background-color: var(--accent-hover); 
+            transform: translateY(-1px); 
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Modern Toggle Switch Styling */
+        .toggle-container {
+            display: flex; align-items: center; gap: 6px; padding: 0 6px 0 4px; height: 32px;
+            border-left: 1px solid rgba(0,0,0,0.1); margin-left: 2px;
+        }
+        .toggle-label { font-size: 12px; font-weight: 600; color: var(--text-main); cursor: pointer; }
+        .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .3s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px;
+            left: 2px; bottom: 2px; background-color: white;
+            transition: .3s; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(14px); }
 
         #compass {
             position: absolute; top: 20px; right: 20px; z-index: 999;
@@ -85,7 +112,6 @@
             max-width: 600px;
         }
 
-        /* Leaflet Overrides */
         .leaflet-bar {
             box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
             border: 1px solid var(--border) !important;
@@ -120,21 +146,14 @@
 
         .info.legend {
             background: rgba(255, 255, 255, 0.85);
-            padding: 12px 16px;
-            border-radius: 8px;
+            padding: 12px 16px; border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(4px);
-            border: 1px solid var(--border);
-            font-family: 'Inter', sans-serif;
-            color: var(--text-main);
+            backdrop-filter: blur(4px); border: 1px solid var(--border);
+            font-family: 'Inter', sans-serif; color: var(--text-main);
         }
         .legend-title {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: block;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 6px;
+            font-size: 13px; font-weight: 600; margin-bottom: 10px; display: block;
+            border-bottom: 1px solid var(--border); padding-bottom: 6px;
         }
         .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 500; }
         .legend-item:last-child { margin-bottom: 0; }
@@ -144,27 +163,16 @@
             border: 1px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-right: 10px;
         }
 
-        /* Modern Smoother Map Scale Override */
         .leaflet-control-scale-line {
-            background: rgba(255, 255, 255, 0.85) !important;
-            backdrop-filter: blur(4px) !important;
-            border: 2px solid var(--primary) !important;
-            border-top: none !important;
-            border-radius: 0 0 4px 4px !important;
-            color: var(--text-main) !important;
-            font-family: 'Inter', sans-serif !important;
-            font-size: 11px !important;
-            font-weight: 600 !important;
-            text-shadow: none !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-            padding: 4px 6px !important;
-            line-height: 1.2 !important;
+            background: rgba(255, 255, 255, 0.85) !important; backdrop-filter: blur(4px) !important;
+            border: 2px solid var(--primary) !important; border-top: none !important; border-radius: 0 0 4px 4px !important;
+            color: var(--text-main) !important; font-family: 'Inter', sans-serif !important;
+            font-size: 11px !important; font-weight: 600 !important; text-shadow: none !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; padding: 4px 6px !important; line-height: 1.2 !important;
         }
         .leaflet-control-scale-line:not(:first-child) {
-            border-top: 2px solid var(--primary) !important;
-            border-bottom: none !important;
-            border-radius: 4px 4px 0 0 !important;
-            margin-top: 4px !important;
+            border-top: 2px solid var(--primary) !important; border-bottom: none !important;
+            border-radius: 4px 4px 0 0 !important; margin-top: 4px !important;
         }
 
     </style>
@@ -177,7 +185,6 @@
         </div>
         <strong id="loading-title">Syncing Live Data</strong><br>
         <span id="loading-desc" style="color: #64748b; font-size: 13px;">Pulling from Google Sheets...</span>
-        <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
     </div>
 
     <div id="compass">
@@ -198,6 +205,14 @@
         </select>
         <input type="text" id="searchInput" placeholder="Search municipality or name...">
         <button onclick="filterMap()">Search</button>
+        
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="bufferToggle" onchange="filterMap()" checked>
+                <span class="slider"></span>
+            </label>
+            <label for="bufferToggle" class="toggle-label">1KM Buffer</label>
+        </div>
     </div>
 
     <div id="map"></div>
@@ -215,9 +230,7 @@
 
         var map = L.map('map', { zoomControl: false }).setView([15.58, 120.59], 10);
         L.control.zoom({ position: 'topleft' }).addTo(map);
-        
         L.control.scale({ imperial: true, metric: true, position: 'bottomleft' }).addTo(map);
-        
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
 
         var legend = L.control({position: 'bottomright'});
@@ -289,7 +302,7 @@
         if (sheetCsvUrl === "YOUR_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
-            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 254 of the code.";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 288 of the code.";
         } else {
             Papa.parse(sheetCsvUrl, {
                 download: true, header: true, skipEmptyLines: true,
@@ -338,12 +351,12 @@
                             var marker = L.marker([lat, lng], { icon: iconData.icon }).bindPopup(popupText, { minWidth: 220 });
                             
                             var bufferCircle = L.circle([lat, lng], {
-                                radius: 1000, // Reduced to 1 KM (1000 meters)
+                                radius: 1000, 
                                 color: iconData.color, 
                                 opacity: 0.7, 
                                 weight: 2,
                                 fillColor: iconData.color, 
-                                fillOpacity: 0.2, // Increased transparency to 20%
+                                fillOpacity: 0.2, 
                                 interactive: false 
                             });
 
@@ -373,7 +386,11 @@
             var currentZoom = map.getZoom();
             var firstMatch = null;
             
-            var showBuffers = currentZoom >= 14; 
+            // Check if the physical toggle switch is turned ON
+            var isBufferEnabled = document.getElementById('bufferToggle').checked;
+            
+            // Buffer only shows if toggle is ON *and* the zoom scale is 14 or higher
+            var showBuffers = isBufferEnabled && (currentZoom >= 14); 
             
             markers.forEach(function(marker) {
                 var itm = marker.searchData;
@@ -401,9 +418,7 @@
 
         document.getElementById('searchInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') filterMap(); });
         
-        map.on('zoomend', function() {
-            filterMap();
-        });
+        map.on('zoomend', function() { filterMap(); });
 
         setTimeout(() => map.invalidateSize(), 500);
     </script>

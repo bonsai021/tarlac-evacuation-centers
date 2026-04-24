@@ -45,52 +45,91 @@
             align-items: center;
         }
 
-        #typeFilter, #searchInput {
-            height: 32px; 
-            padding: 0 10px; 
-            border: 1px solid var(--border); border-radius: 6px; 
+        /* -------------------------------------------
+           Modern Multi-Select Dropdown System
+        ---------------------------------------------- */
+        .multi-select-container { position: relative; display: flex; align-items: center; }
+
+        .multi-select-button {
+            height: 32px; padding: 0 12px; border: 1px solid var(--border); border-radius: 6px; 
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; outline: none;
+            background: rgba(255, 255, 255, 0.8); color: var(--text-main); cursor: pointer;
+            transition: all 0.2s ease; box-sizing: border-box; display: flex;
+            align-items: center; justify-content: space-between; width: 145px;
+            user-select: none;
+        }
+        .multi-select-button:hover { background: #ffffff; border-color: #94a3b8; }
+        
+        /* Smooth Animated Dropdown Panel */
+        .multi-select-dropdown {
+            position: absolute; top: 100%; left: 0; margin-top: 8px;
+            background: var(--surface); border: 1px solid var(--border); border-radius: 8px; 
+            padding: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; gap: 2px; min-width: 180px; z-index: 1000;
+            
+            /* Animation properties */
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .multi-select-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
+
+        /* Custom Checkbox Label Styling */
+        .multi-select-dropdown label {
+            position: relative; padding: 8px 8px 8px 32px;
+            font-size: 12px; font-weight: 500; color: var(--text-main);
+            cursor: pointer; border-radius: 6px; transition: background 0.2s ease;
+            user-select: none; display: block;
+        }
+        .multi-select-dropdown label:hover { background: #f8fafc; }
+        
+        /* Hide the default browser checkbox */
+        .multi-select-dropdown input[type="checkbox"] { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        
+        /* Create the custom checkbox square */
+        .checkmark {
+            position: absolute; top: 50%; left: 8px; transform: translateY(-50%);
+            height: 16px; width: 16px; background-color: var(--surface);
+            border: 1.5px solid #cbd5e1; border-radius: 4px; transition: all 0.2s ease;
+        }
+        
+        /* Checkbox interactions */
+        .multi-select-dropdown label:hover input ~ .checkmark { border-color: #94a3b8; }
+        .multi-select-dropdown input:checked ~ .checkmark { background-color: var(--accent); border-color: var(--accent); }
+        
+        /* The actual check icon inside the box */
+        .checkmark:after {
+            content: ""; position: absolute; display: none;
+            left: 4.5px; top: 1.5px; width: 4px; height: 8px;
+            border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
+        }
+        .multi-select-dropdown input:checked ~ .checkmark:after { display: block; }
+        /* ------------------------------------------- */
+
+        #searchInput {
+            height: 32px; padding: 0 10px; border: 1px solid var(--border); border-radius: 6px; 
             font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
             background: rgba(255, 255, 255, 0.8); color: var(--text-main);
-            transition: all 0.2s ease; box-sizing: border-box;
+            transition: all 0.2s ease; box-sizing: border-box; width: 180px;
         }
-
-        #typeFilter { cursor: pointer; }
-        #typeFilter:focus, #searchInput:focus { 
-            border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; 
-        }
+        #searchInput:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
         
-        #searchInput { width: 180px; }
-        
-        #search-box button { 
-            height: 32px; 
-            padding: 0 16px; 
-            background-color: var(--accent); 
+        #search-box button.search-btn { 
+            height: 32px; padding: 0 16px; background-color: var(--accent); 
             color: white; border: none; border-radius: 6px; 
             font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; 
             cursor: pointer; transition: all 0.2s ease; box-sizing: border-box;
             box-shadow: 0 1px 2px rgba(59, 130, 246, 0.3); 
         }
-        
-        #search-box button:hover { 
-            background-color: var(--accent-hover); 
-            transform: translateY(-1px); 
+        #search-box button.search-btn:hover { 
+            background-color: var(--accent-hover); transform: translateY(-1px); 
             box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
         }
 
-        /* Modern Toggle Switch Styling */
         .toggle-container {
             display: flex; align-items: center; gap: 8px; padding: 0 6px 0 8px; height: 32px;
             border-left: 1px solid rgba(0,0,0,0.1); margin-left: 2px;
         }
-        
-        /* Updated Smoother Font Styling for BUFFER ZONE */
-        .toggle-label { 
-            font-size: 11px; 
-            font-weight: 600; 
-            color: var(--text-main); 
-            cursor: pointer; 
-            letter-spacing: 0.5px; 
-        }
+        .toggle-label { font-size: 11px; font-weight: 600; color: var(--text-main); cursor: pointer; letter-spacing: 0.5px; }
         
         .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -117,23 +156,14 @@
             z-index: 1000; background: var(--surface); padding: 24px 32px; 
             border-radius: 16px; font-size: 15px; color: var(--text-main);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
-            border: 1px solid var(--border); text-align: center; line-height: 1.6;
-            max-width: 600px;
+            border: 1px solid var(--border); text-align: center; line-height: 1.6; max-width: 600px;
         }
 
-        .leaflet-bar {
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
-            border: 1px solid var(--border) !important;
-            border-radius: 6px !important;
-            overflow: hidden;
-        }
+        .leaflet-bar { box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important; border: 1px solid var(--border) !important; border-radius: 6px !important; overflow: hidden; }
         .leaflet-touch .leaflet-bar a, .leaflet-bar a {
-            width: 26px !important; height: 26px !important;
-            line-height: 26px !important; font-size: 15px !important;
-            font-weight: 500 !important; color: var(--text-main) !important;
-            background-color: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(4px) !important;
-            transition: all 0.2s ease !important;
+            width: 26px !important; height: 26px !important; line-height: 26px !important; font-size: 15px !important;
+            font-weight: 500 !important; color: var(--text-main) !important; background-color: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(4px) !important; transition: all 0.2s ease !important;
         }
         .leaflet-bar a:hover { background-color: var(--surface) !important; color: var(--primary) !important; }
 
@@ -154,23 +184,15 @@
         .custom-evac-icon div:hover { transform: scale(1.1); }
 
         .info.legend {
-            background: rgba(255, 255, 255, 0.85);
-            padding: 12px 16px; border-radius: 8px;
+            background: rgba(255, 255, 255, 0.85); padding: 12px 16px; border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(4px); border: 1px solid var(--border);
             font-family: 'Inter', sans-serif; color: var(--text-main);
         }
-        .legend-title {
-            font-size: 13px; font-weight: 600; margin-bottom: 10px; display: block;
-            border-bottom: 1px solid var(--border); padding-bottom: 6px;
-        }
+        .legend-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
         .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 500; }
         .legend-item:last-child { margin-bottom: 0; }
-        .legend-icon {
-            width: 14px; height: 14px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-right: 10px;
-        }
+        .legend-icon { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-right: 10px; }
 
         .leaflet-control-scale-line {
             background: rgba(255, 255, 255, 0.85) !important; backdrop-filter: blur(4px) !important;
@@ -203,17 +225,40 @@
     </div>
 
     <div id="search-box">
-        <select id="typeFilter" onchange="filterMap()">
-            <option value="ALL">All Facilities</option>
-            <option value="EVACUATION CENTER">Evacuation Center</option>
-            <option value="SCHOOL">School</option>
-            <option value="CHURCH">Church</option>
-            <option value="COVERED COURT">Covered Court</option>
-            <option value="BARANGAY HALL">Barangay Hall</option>
-            <option value="HOSPITAL">Hospital</option>
-        </select>
+        <div class="multi-select-container">
+            <div class="multi-select-button" id="multiSelectBtn" onclick="toggleDropdown(event)">
+                All Facilities <span>▾</span>
+            </div>
+            <div class="multi-select-dropdown" id="typeDropdown" onclick="event.stopPropagation()">
+                <label>
+                    <input type="checkbox" value="EVACUATION CENTER" checked onchange="filterMap()">
+                    <span class="checkmark"></span> Evacuation Center
+                </label>
+                <label>
+                    <input type="checkbox" value="SCHOOL" checked onchange="filterMap()">
+                    <span class="checkmark"></span> School
+                </label>
+                <label>
+                    <input type="checkbox" value="CHURCH" checked onchange="filterMap()">
+                    <span class="checkmark"></span> Church
+                </label>
+                <label>
+                    <input type="checkbox" value="COVERED COURT" checked onchange="filterMap()">
+                    <span class="checkmark"></span> Covered Court
+                </label>
+                <label>
+                    <input type="checkbox" value="BARANGAY HALL" checked onchange="filterMap()">
+                    <span class="checkmark"></span> Barangay Hall
+                </label>
+                <label>
+                    <input type="checkbox" value="HOSPITAL" checked onchange="filterMap()">
+                    <span class="checkmark"></span> Hospital
+                </label>
+            </div>
+        </div>
+
         <input type="text" id="searchInput" placeholder="Search municipality or name...">
-        <button onclick="filterMap()">Search</button>
+        <button class="search-btn" onclick="filterMap()">Search</button>
         
         <div class="toggle-container">
             <label class="switch">
@@ -230,6 +275,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     
     <script>
+        function toggleDropdown(e) {
+            document.getElementById('typeDropdown').classList.toggle('show');
+            if (e) e.stopPropagation();
+        }
+
+        document.addEventListener('click', function(event) {
+            var dropdown = document.getElementById('typeDropdown');
+            var button = document.getElementById('multiSelectBtn');
+            if (dropdown.classList.contains('show') && !dropdown.contains(event.target) && event.target !== button) {
+                dropdown.classList.remove('show');
+            }
+        });
+
         window.onerror = function(message, source, lineno) {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "❌ <b style='color: #ef4444;'>CRITICAL ERROR:</b>";
@@ -303,6 +361,9 @@
             return { icon: leafletIcon, color: bgColor };
         }
 
+        // =========================================================================
+        // 🚨 IMPORTANT: PASTE YOUR CSV PUBLISH LINK BELOW 🚨
+        // =========================================================================
         var sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd_7XwY0Z_Dzs9THcJrXePJOdcchsr8XRGJ3B1E05RJR3j6Z-Y_8lak51-tM-znL2CIoOWwRP83tnM/pub?gid=1609154454&single=true&output=csv";
         if (sheetCsvUrl.includes("pubhtml")) sheetCsvUrl = sheetCsvUrl.replace("pubhtml", "pub?output=csv");
         
@@ -311,7 +372,7 @@
         if (sheetCsvUrl === "YOUR_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
-            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 289 of the code.";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 348 of the code.";
         } else {
             Papa.parse(sheetCsvUrl, {
                 download: true, header: true, skipEmptyLines: true,
@@ -391,18 +452,29 @@
 
         function filterMap() {
             var query = document.getElementById('searchInput').value.toLowerCase();
-            var selType = document.getElementById('typeFilter').value;
+            
+            var checkedBoxes = document.querySelectorAll('#typeDropdown input:checked');
+            var selectedTypes = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            var totalBoxes = document.querySelectorAll('#typeDropdown input').length;
+            var btnText = document.getElementById('multiSelectBtn');
+            if (selectedTypes.length === totalBoxes) {
+                btnText.innerHTML = "All Facilities <span>▾</span>";
+            } else if (selectedTypes.length === 0) {
+                btnText.innerHTML = "None Selected <span>▾</span>";
+            } else {
+                btnText.innerHTML = selectedTypes.length + " Selected <span>▾</span>";
+            }
+
             var currentZoom = map.getZoom();
             var firstMatch = null;
-            
             var isBufferEnabled = document.getElementById('bufferToggle').checked;
-            
             var showBuffers = isBufferEnabled && (currentZoom >= 14); 
             
             markers.forEach(function(marker) {
                 var itm = marker.searchData;
                 var mText = itm.name.toLowerCase().includes(query) || itm.mun.toLowerCase().includes(query);
-                var mType = (selType === "ALL") || (itm.type === selType);
+                var mType = selectedTypes.includes(itm.type);
 
                 if (mText && mType) {
                     map.addLayer(marker);

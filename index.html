@@ -357,8 +357,8 @@
         
         var markers = [];
 
-        // Raster Tile Layer pointing to your exported QGIS tiles
-        var floodLayer = L.tileLayer('flood_tiles/{z}/{x}/{y}.png', {
+        // Use the absolute GitHub Pages URL to force the connection
+        var floodLayer = L.tileLayer('https://tarlacpdrrmo.github.io/tarlac-evacuation-centers/flood_tiles/{z}/{x}/{y}.png', {
             maxZoom: 16,
             minZoom: 10,
             opacity: 0.85 

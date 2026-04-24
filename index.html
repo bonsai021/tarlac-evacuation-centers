@@ -43,11 +43,11 @@
             display: flex; gap: 8px; border: 1px solid var(--border);
             backdrop-filter: blur(4px);
             align-items: center;
+            flex-wrap: wrap; 
+            max-width: calc(100vw - 140px);
         }
 
-        /* -------------------------------------------
-           Modern Multi-Select Dropdown System
-        ---------------------------------------------- */
+        /* Modern Multi-Select Dropdown System */
         .multi-select-container { position: relative; display: flex; align-items: center; }
 
         .multi-select-button {
@@ -60,20 +60,16 @@
         }
         .multi-select-button:hover { background: #ffffff; border-color: #94a3b8; }
         
-        /* Smooth Animated Dropdown Panel */
         .multi-select-dropdown {
             position: absolute; top: 100%; left: 0; margin-top: 8px;
             background: var(--surface); border: 1px solid var(--border); border-radius: 8px; 
             padding: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; gap: 2px; min-width: 180px; z-index: 1000;
-            
-            /* Animation properties */
             opacity: 0; visibility: hidden; transform: translateY(-10px);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .multi-select-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
-        /* Custom Checkbox Label Styling */
         .multi-select-dropdown label {
             position: relative; padding: 8px 8px 8px 32px;
             font-size: 12px; font-weight: 500; color: var(--text-main);
@@ -82,28 +78,23 @@
         }
         .multi-select-dropdown label:hover { background: #f8fafc; }
         
-        /* Hide the default browser checkbox */
         .multi-select-dropdown input[type="checkbox"] { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
         
-        /* Create the custom checkbox square */
         .checkmark {
             position: absolute; top: 50%; left: 8px; transform: translateY(-50%);
             height: 16px; width: 16px; background-color: var(--surface);
             border: 1.5px solid #cbd5e1; border-radius: 4px; transition: all 0.2s ease;
         }
         
-        /* Checkbox interactions */
         .multi-select-dropdown label:hover input ~ .checkmark { border-color: #94a3b8; }
         .multi-select-dropdown input:checked ~ .checkmark { background-color: var(--accent); border-color: var(--accent); }
         
-        /* The actual check icon inside the box */
         .checkmark:after {
             content: ""; position: absolute; display: none;
             left: 4.5px; top: 1.5px; width: 4px; height: 8px;
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
         .multi-select-dropdown input:checked ~ .checkmark:after { display: block; }
-        /* ------------------------------------------- */
 
         #searchInput {
             height: 32px; padding: 0 10px; border: 1px solid var(--border); border-radius: 6px; 
@@ -156,7 +147,8 @@
             z-index: 1000; background: var(--surface); padding: 24px 32px; 
             border-radius: 16px; font-size: 15px; color: var(--text-main);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
-            border: 1px solid var(--border); text-align: center; line-height: 1.6; max-width: 600px;
+            border: 1px solid var(--border); text-align: center; line-height: 1.6;
+            max-width: 600px;
         }
 
         .leaflet-bar { box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important; border: 1px solid var(--border) !important; border-radius: 6px !important; overflow: hidden; }
@@ -205,7 +197,6 @@
             border-top: 2px solid var(--primary) !important; border-bottom: none !important;
             border-radius: 4px 4px 0 0 !important; margin-top: 4px !important;
         }
-
     </style>
 </head>
 <body>
@@ -217,6 +208,15 @@
         <strong id="loading-title">Syncing Live Data</strong><br>
         <span id="loading-desc" style="color: #64748b; font-size: 13px;">Pulling from Google Sheets...</span>
     </div>
+
+    <script>
+        window.onerror = function(message, source, lineno) {
+            document.getElementById('spinner-container').style.display = 'none';
+            document.getElementById('loading-title').innerHTML = "❌ <b style='color: #ef4444;'>CRITICAL SYNTAX ERROR:</b>";
+            document.getElementById('loading-desc').innerHTML = "<b>" + message + "</b><br><br>Check around line <b>" + lineno + "</b> in your code. You likely accidentally deleted a quotation mark (\") or a semicolon (;) when pasting your link.";
+            return true;
+        };
+    </script>
 
     <div id="compass">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -230,30 +230,12 @@
                 All Facilities <span>▾</span>
             </div>
             <div class="multi-select-dropdown" id="typeDropdown" onclick="event.stopPropagation()">
-                <label>
-                    <input type="checkbox" value="EVACUATION CENTER" checked onchange="filterMap()">
-                    <span class="checkmark"></span> Evacuation Center
-                </label>
-                <label>
-                    <input type="checkbox" value="SCHOOL" checked onchange="filterMap()">
-                    <span class="checkmark"></span> School
-                </label>
-                <label>
-                    <input type="checkbox" value="CHURCH" checked onchange="filterMap()">
-                    <span class="checkmark"></span> Church
-                </label>
-                <label>
-                    <input type="checkbox" value="COVERED COURT" checked onchange="filterMap()">
-                    <span class="checkmark"></span> Covered Court
-                </label>
-                <label>
-                    <input type="checkbox" value="BARANGAY HALL" checked onchange="filterMap()">
-                    <span class="checkmark"></span> Barangay Hall
-                </label>
-                <label>
-                    <input type="checkbox" value="HOSPITAL" checked onchange="filterMap()">
-                    <span class="checkmark"></span> Hospital
-                </label>
+                <label><input type="checkbox" value="EVACUATION CENTER" checked onchange="filterMap()"> <span class="checkmark"></span> Evacuation Center</label>
+                <label><input type="checkbox" value="SCHOOL" checked onchange="filterMap()"> <span class="checkmark"></span> School</label>
+                <label><input type="checkbox" value="CHURCH" checked onchange="filterMap()"> <span class="checkmark"></span> Church</label>
+                <label><input type="checkbox" value="COVERED COURT" checked onchange="filterMap()"> <span class="checkmark"></span> Covered Court</label>
+                <label><input type="checkbox" value="BARANGAY HALL" checked onchange="filterMap()"> <span class="checkmark"></span> Barangay Hall</label>
+                <label><input type="checkbox" value="HOSPITAL" checked onchange="filterMap()"> <span class="checkmark"></span> Hospital</label>
             </div>
         </div>
 
@@ -262,10 +244,18 @@
         
         <div class="toggle-container">
             <label class="switch">
-                <input type="checkbox" id="bufferToggle" onchange="filterMap()" checked>
+                <input type="checkbox" id="bufferToggle" onchange="filterMap()">
                 <span class="slider"></span>
             </label>
             <label for="bufferToggle" class="toggle-label">BUFFER ZONE</label>
+        </div>
+        
+        <div class="toggle-container">
+            <label class="switch">
+                <input type="checkbox" id="floodToggle" onchange="filterMap()">
+                <span class="slider"></span>
+            </label>
+            <label for="floodToggle" class="toggle-label">FLOOD HAZARD</label>
         </div>
     </div>
 
@@ -288,18 +278,13 @@
             }
         });
 
-        window.onerror = function(message, source, lineno) {
-            document.getElementById('spinner-container').style.display = 'none';
-            document.getElementById('loading-title').innerHTML = "❌ <b style='color: #ef4444;'>CRITICAL ERROR:</b>";
-            document.getElementById('loading-desc').innerHTML = message + "<br><br>Check line " + lineno + " for deleted quotes.";
-            return false;
-        };
-
-        var map = L.map('map', { zoomControl: false }).setView([15.58, 120.59], 10);
+        // Initialize Map with Hardware Acceleration
+        var map = L.map('map', { zoomControl: false, preferCanvas: true }).setView([15.58, 120.59], 10);
         L.control.zoom({ position: 'topleft' }).addTo(map);
         L.control.scale({ imperial: true, metric: true, position: 'bottomleft' }).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
 
+        // Map Legend (Includes Flood Hazard)
         var legend = L.control({position: 'bottomright'});
         legend.onAdd = function (map) {
             var div = L.DomUtil.create('div', 'info legend');
@@ -309,15 +294,17 @@
                 { name: "Church", color: "#8b5cf6", svg: '<path d="M13 2h-2v3H8v2h3v4H7v2h4v7h2v-7h4v-2h-4V7h3V5h-3V2z"/>' },
                 { name: "Covered Court", color: "#10b981", svg: '<path d="M12 2C6.5 2 2 6.5 2 12v10h20V12c0-5.5-4.5-10-10-10zm-2 18H6v-8h4v8zm10 0h-4v-8h4v8z"/>' },
                 { name: "Barangay Hall", color: "#ef4444", svg: '<path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-8h8v8z"/>' },
-                { name: "Hospital", color: "#ec4899", svg: '<path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 9h-4v4h-2v-4H7v-2h4V6h2v4h4v2z"/>' }
+                { name: "Hospital", color: "#ec4899", svg: '<path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 9h-4v4h-2v-4H7v-2h4V6h2v4h4v2z"/>' },
+                { name: "Flood Hazard", color: "rgba(14, 165, 233, 0.4)", stroke: "transparent", svg: '<circle cx="12" cy="12" r="8" fill="#0ea5e9" opacity="0.8"/>'}
             ];
 
             var html = '<span class="legend-title">Facility Types</span>';
             categories.forEach(function(cat) {
+                var strokeAttr = cat.stroke ? (cat.stroke === "transparent" ? `fill="none"` : `stroke="${cat.stroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"`) : `fill="white"`;
                 html += `
                     <div class="legend-item">
-                        <div class="legend-icon" style="background-color: ${cat.color};">
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="white">${cat.svg}</svg>
+                        <div class="legend-icon" style="background-color: ${cat.color}; border: ${cat.stroke ? (cat.stroke === "transparent" ? 'none' : '1px solid '+cat.stroke) : '1px solid white'};">
+                            <svg width="8" height="8" viewBox="0 0 24 24" ${strokeAttr}>${cat.svg}</svg>
                         </div>
                         <span style="font-size: 11px;">${cat.name}</span>
                     </div>`;
@@ -364,15 +351,27 @@
         // =========================================================================
         // 🚨 IMPORTANT: PASTE YOUR CSV PUBLISH LINK BELOW 🚨
         // =========================================================================
-        var sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd_7XwY0Z_Dzs9THcJrXePJOdcchsr8XRGJ3B1E05RJR3j6Z-Y_8lak51-tM-znL2CIoOWwRP83tnM/pub?gid=1609154454&single=true&output=csv";
+        var sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQd_7XwY0Z_Dzs9THcJrXePJOdcchsr8XRGJ3B1E05RJR3j6Z-Y_8lak51-tM-znL2CIoOWwRP83tnM/pub?gid=1609154454&single=true&output=csv
+"; // ONLY Sheet 2 is needed now
+        
         if (sheetCsvUrl.includes("pubhtml")) sheetCsvUrl = sheetCsvUrl.replace("pubhtml", "pub?output=csv");
         
         var markers = [];
 
-        if (sheetCsvUrl === "YOUR_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
+        // =========================================================================
+        // ZERO-PROCESSING RASTER TILE LAYER FOR FLOOD HAZARD
+        // This expects the 'flood_tiles' folder to be in the exact same directory as your index.html
+        // =========================================================================
+        var floodLayer = L.tileLayer('flood_tiles/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            minZoom: 10,
+            opacity: 0.8 // You can adjust the overall transparency of the flood layer here
+        });
+
+        if (sheetCsvUrl === "YOUR_SHEET_2_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
-            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 348 of the code.";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 388 of the code.";
         } else {
             Papa.parse(sheetCsvUrl, {
                 download: true, header: true, skipEmptyLines: true,
@@ -468,9 +467,19 @@
 
             var currentZoom = map.getZoom();
             var firstMatch = null;
+            
+            // Buffer Hazard Toggle Logic
             var isBufferEnabled = document.getElementById('bufferToggle').checked;
             var showBuffers = isBufferEnabled && (currentZoom >= 14); 
             
+            // Raster Tile Flood Hazard Toggle Logic
+            var isFloodEnabled = document.getElementById('floodToggle').checked;
+            if (isFloodEnabled) { 
+                if (!map.hasLayer(floodLayer)) map.addLayer(floodLayer); 
+            } else { 
+                if (map.hasLayer(floodLayer)) map.removeLayer(floodLayer); 
+            }
+
             markers.forEach(function(marker) {
                 var itm = marker.searchData;
                 var mText = itm.name.toLowerCase().includes(query) || itm.mun.toLowerCase().includes(query);

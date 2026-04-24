@@ -358,8 +358,10 @@
         var markers = [];
 
         // Use the absolute GitHub Pages URL to force the connection
+        // Raster Tile Layer with maxNativeZoom enabled
         var floodLayer = L.tileLayer('https://tarlacpdrrmo.github.io/tarlac-evacuation-centers/flood_tiles/{z}/{x}/{y}.png', {
-            maxZoom: 16,
+            maxZoom: 22,         // Allows the map itself to zoom in incredibly close
+            maxNativeZoom: 16,   // Tells Leaflet to stretch the level 16 images instead of giving up
             minZoom: 10,
             opacity: 0.85 
         });

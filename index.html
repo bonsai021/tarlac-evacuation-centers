@@ -19,10 +19,12 @@
             --input-bg: #273142;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --accent: #ef4444; /* Vibrant red from your reference */
+            --accent: #ef4444; 
             --accent-hover: #dc2626;
             --blue-accent: #3b82f6;
             --surface: #ffffff;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
         }
 
         body, html { 
@@ -41,7 +43,7 @@
         #search-box { 
             position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 999; background: var(--panel-bg); padding: 8px 12px; 
-            border-radius: 50px; /* Full pill shape */
+            border-radius: 50px; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
             display: flex; gap: 12px; border: 1px solid var(--panel-border);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -194,8 +196,8 @@
            Smooth Buffer Animation CSS
         ---------------------------------------------- */
         .buffer-anim {
-            transition: fill-opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), 
-                        stroke-opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: fill-opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        stroke-opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
         #loading {
@@ -251,7 +253,7 @@
         <div class="toggle-container">
             <span class="ui-label" style="margin-right: 6px;">BUFFER ZONE</span>
             <label class="switch">
-                <input type="checkbox" id="bufferToggle" onchange="filterMap()">
+                <input type="checkbox" id="bufferToggle" onchange="updateBufferVisibility()">
                 <span class="slider"></span>
             </label>
         </div>
@@ -276,7 +278,7 @@
             }
         });
 
-        // Basemap switched to CartoDB Positron (Light/Clean map matching your request)
+        // CartoDB Positron Basemap
         var map = L.map('map', { zoomControl: false }).setView([15.58, 120.59], 10);
         L.control.zoom({ position: 'topleft' }).addTo(map);
         L.control.scale({ imperial: true, metric: true, position: 'bottomleft' }).addTo(map);
@@ -351,11 +353,12 @@
         if (sheetCsvUrl.includes("pubhtml")) sheetCsvUrl = sheetCsvUrl.replace("pubhtml", "pub?output=csv");
         
         var markers = [];
+        var currentActiveMarker = null; // Keeps track of which pin is currently clicked
 
         if (sheetCsvUrl === "YOUR_SHEET_2_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
-            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 389 of the code.";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 395 of the code.";
         } else {
             Papa.parse(sheetCsvUrl, {
                 download: true, header: true, skipEmptyLines: true,
@@ -403,8 +406,6 @@
                             
                             var marker = L.marker([lat, lng], { icon: iconData.icon }).bindPopup(popupText, { minWidth: 220 });
                             
-                            // Buffer is generated immediately but set to ZERO opacity so it is hidden.
-                            // Adding the 'buffer-anim' class allows CSS to smoothly fade it in/out later.
                             var bufferCircle = L.circle([lat, lng], {
                                 radius: 1000, 
                                 color: iconData.color, 
@@ -419,7 +420,6 @@
                             marker.searchData = { name: name, mun: mun, lat: lat, lng: lng, type: type };
                             marker.bufferCircle = bufferCircle;
                             
-                            // Add both to map immediately
                             marker.addTo(map);
                             bufferCircle.addTo(map);
                             
@@ -439,6 +439,38 @@
             });
         }
 
+        // --- MAP CLICK LOGIC ---
+        // When a user clicks a pin and the popup opens, set it as the active marker
+        map.on('popupopen', function(e) {
+            currentActiveMarker = e.popup._source;
+            updateBufferVisibility();
+        });
+
+        // When a user closes the popup or clicks elsewhere, remove the buffer
+        map.on('popupclose', function(e) {
+            if (currentActiveMarker === e.popup._source) {
+                currentActiveMarker.bufferCircle.setStyle({ opacity: 0, fillOpacity: 0 });
+                currentActiveMarker = null;
+            }
+        });
+
+        // Controls showing/hiding the single buffer based on the toggle switch
+        function updateBufferVisibility() {
+            var isBufferEnabled = document.getElementById('bufferToggle').checked;
+            
+            // First, ensure all unclicked buffers are totally hidden
+            markers.forEach(function(m) {
+                if (m !== currentActiveMarker || !isBufferEnabled) {
+                    m.bufferCircle.setStyle({ opacity: 0, fillOpacity: 0 });
+                }
+            });
+
+            // If the toggle is ON, and the user has a pin clicked, fade in the buffer to 10%
+            if (isBufferEnabled && currentActiveMarker) {
+                currentActiveMarker.bufferCircle.setStyle({ opacity: 0.4, fillOpacity: 0.1 });
+            }
+        }
+
         function filterMap() {
             var query = document.getElementById('searchInput').value.toLowerCase();
             
@@ -456,7 +488,6 @@
             }
 
             var firstMatch = null;
-            var isBufferEnabled = document.getElementById('bufferToggle').checked;
             
             markers.forEach(function(marker) {
                 var itm = marker.searchData;
@@ -465,28 +496,18 @@
 
                 if (mText && mType) {
                     if (!map.hasLayer(marker)) map.addLayer(marker);
-                    
-                    // Smoothly animate the buffer in or out based on the toggle
-                    if (isBufferEnabled) {
-                        marker.bufferCircle.setStyle({ opacity: 0.4, fillOpacity: 0.1 });
-                    } else {
-                        marker.bufferCircle.setStyle({ opacity: 0, fillOpacity: 0 });
-                    }
-                    
                     if (!firstMatch && query.trim() !== "") firstMatch = marker;
                 } else {
                     if (map.hasLayer(marker)) map.removeLayer(marker);
-                    // Hide buffer if marker is filtered out
-                    marker.bufferCircle.setStyle({ opacity: 0, fillOpacity: 0 }); 
                 }
             });
+            
+            updateBufferVisibility();
             
             if (firstMatch) { map.setView([firstMatch.searchData.lat, firstMatch.searchData.lng], 14); firstMatch.openPopup(); }
         }
 
-        // Live filtering as user types
         document.getElementById('searchInput').addEventListener('input', function () { filterMap(); });
-        
         setTimeout(() => map.invalidateSize(), 500);
     </script>
 </body>

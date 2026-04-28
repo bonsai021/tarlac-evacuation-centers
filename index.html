@@ -13,16 +13,16 @@
     
     <style>
         :root {
-            --primary: #0f172a;
-            --primary-hover: #334155;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
+            /* Dark sleek palette matching your screenshots */
+            --panel-bg: rgba(63, 73, 88, 0.95);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --input-bg: #273142;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #ef4444; /* Vibrant red from your reference */
+            --accent-hover: #dc2626;
+            --blue-accent: #3b82f6;
             --surface: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
         }
 
         body, html { 
@@ -35,166 +35,175 @@
         
         #map { height: 100vh; width: 100vw; z-index: 1; }
         
+        /* -------------------------------------------
+           Sleek Dark Pill Search Bar
+        ---------------------------------------------- */
         #search-box { 
-            position: absolute; top: 20px; left: 60px; z-index: 999; 
-            background: rgba(255, 255, 255, 0.5); padding: 8px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            display: flex; gap: 8px; border: 1px solid var(--border);
-            backdrop-filter: blur(4px);
-            align-items: center;
-            flex-wrap: wrap; 
-            max-width: calc(100vw - 140px);
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 999; background: var(--panel-bg); padding: 8px 12px; 
+            border-radius: 50px; /* Full pill shape */
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+            display: flex; gap: 12px; border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            align-items: center; width: max-content;
+            transition: all 0.3s ease;
+        }
+
+        .ui-label {
+            font-size: 10px; font-weight: 700; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-left: 8px; user-select: none;
         }
 
         /* Modern Multi-Select Dropdown System */
         .multi-select-container { position: relative; display: flex; align-items: center; }
 
         .multi-select-button {
-            height: 32px; padding: 0 12px; border: 1px solid var(--border); border-radius: 6px; 
+            height: 34px; padding: 0 14px; border: 1px solid transparent; border-radius: 20px; 
             font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; outline: none;
-            background: rgba(255, 255, 255, 0.8); color: var(--text-main); cursor: pointer;
-            transition: all 0.2s ease; box-sizing: border-box; display: flex;
-            align-items: center; justify-content: space-between; width: 145px;
-            user-select: none;
+            background: var(--input-bg); color: var(--text-main); cursor: pointer;
+            transition: all 0.2s ease; display: flex; align-items: center; justify-content: space-between; 
+            width: 140px; margin-left: 6px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
         }
-        .multi-select-button:hover { background: #ffffff; border-color: #94a3b8; }
+        .multi-select-button:hover { background: #1e293b; border-color: rgba(255,255,255,0.2); }
         
         .multi-select-dropdown {
-            position: absolute; top: 100%; left: 0; margin-top: 8px;
-            background: var(--surface); border: 1px solid var(--border); border-radius: 8px; 
-            padding: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; gap: 2px; min-width: 180px; z-index: 1000;
+            position: absolute; top: 100%; left: 0; margin-top: 12px;
+            background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; 
+            padding: 8px; box-shadow: 0 15px 30px -5px rgba(0,0,0,0.4);
+            display: flex; flex-direction: column; gap: 4px; min-width: 180px; z-index: 1000;
             opacity: 0; visibility: hidden; transform: translateY(-10px);
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         }
         .multi-select-dropdown.show { opacity: 1; visibility: visible; transform: translateY(0); }
 
         .multi-select-dropdown label {
-            position: relative; padding: 8px 8px 8px 32px;
+            position: relative; padding: 8px 12px 8px 34px;
             font-size: 12px; font-weight: 500; color: var(--text-main);
-            cursor: pointer; border-radius: 6px; transition: background 0.2s ease;
-            user-select: none; display: block;
+            cursor: pointer; border-radius: 8px; transition: background 0.2s ease; display: block;
         }
-        .multi-select-dropdown label:hover { background: #f8fafc; }
+        .multi-select-dropdown label:hover { background: rgba(255,255,255,0.1); }
         
         .multi-select-dropdown input[type="checkbox"] { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
         
         .checkmark {
-            position: absolute; top: 50%; left: 8px; transform: translateY(-50%);
-            height: 16px; width: 16px; background-color: var(--surface);
-            border: 1.5px solid #cbd5e1; border-radius: 4px; transition: all 0.2s ease;
+            position: absolute; top: 50%; left: 10px; transform: translateY(-50%);
+            height: 14px; width: 14px; background-color: var(--input-bg);
+            border: 1px solid #64748b; border-radius: 4px; transition: all 0.2s ease;
         }
-        
-        .multi-select-dropdown label:hover input ~ .checkmark { border-color: #94a3b8; }
-        .multi-select-dropdown input:checked ~ .checkmark { background-color: var(--accent); border-color: var(--accent); }
-        
+        .multi-select-dropdown label:hover input ~ .checkmark { border-color: #cbd5e1; }
+        .multi-select-dropdown input:checked ~ .checkmark { background-color: var(--blue-accent); border-color: var(--blue-accent); }
         .checkmark:after {
             content: ""; position: absolute; display: none;
-            left: 4.5px; top: 1.5px; width: 4px; height: 8px;
+            left: 4px; top: 1.5px; width: 3.5px; height: 7px;
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
         .multi-select-dropdown input:checked ~ .checkmark:after { display: block; }
 
         #searchInput {
-            height: 32px; padding: 0 10px; border: 1px solid var(--border); border-radius: 6px; 
+            height: 34px; padding: 0 16px; border: 1px solid transparent; border-radius: 20px; 
             font-family: 'Inter', sans-serif; font-size: 13px; outline: none;
-            background: rgba(255, 255, 255, 0.8); color: var(--text-main);
-            transition: all 0.2s ease; box-sizing: border-box; width: 180px;
+            background: var(--input-bg); color: var(--text-main); margin-left: 6px;
+            transition: all 0.2s ease; width: 160px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
         }
-        #searchInput:focus { border-color: #94a3b8; box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.2); background: #ffffff; }
+        #searchInput::placeholder { color: #64748b; }
+        #searchInput:focus { background: #1e293b; border-color: rgba(255,255,255,0.2); width: 180px; }
         
-        #search-box button.search-btn { 
-            height: 32px; padding: 0 16px; background-color: var(--accent); 
-            color: white; border: none; border-radius: 6px; 
-            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; 
-            cursor: pointer; transition: all 0.2s ease; box-sizing: border-box;
-            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.3); 
-        }
-        #search-box button.search-btn:hover { 
-            background-color: var(--accent-hover); transform: translateY(-1px); 
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
-        }
-
+        /* Minimalist Switch Design */
         .toggle-container {
-            display: flex; align-items: center; gap: 8px; padding: 0 6px 0 8px; height: 32px;
-            border-left: 1px solid rgba(0,0,0,0.1); margin-left: 2px;
+            display: flex; align-items: center; gap: 8px; padding: 0 12px 0 16px; height: 34px;
+            border-left: 1px solid rgba(255,255,255,0.1); margin-left: 4px;
         }
-        .toggle-label { font-size: 11px; font-weight: 600; color: var(--text-main); cursor: pointer; letter-spacing: 0.5px; }
+        .toggle-label { font-size: 10px; font-weight: 700; color: var(--text-muted); cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; }
         
-        .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #cbd5e1; transition: .3s; border-radius: 20px;
+            background-color: var(--input-bg); transition: .3s; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box;
         }
         .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px;
-            left: 2px; bottom: 2px; background-color: white;
-            transition: .3s; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            position: absolute; content: ""; height: 14px; width: 14px;
+            left: 2px; bottom: 2px; background-color: #cbd5e1;
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%; 
         }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(14px); }
+        input:checked + .slider { background-color: var(--blue-accent); border-color: var(--blue-accent); }
+        input:checked + .slider:before { transform: translateX(16px); background-color: white; }
 
-        #compass {
-            position: absolute; top: 20px; right: 20px; z-index: 999;
-            width: 44px; height: 44px; pointer-events: none;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        /* -------------------------------------------
+           Leaflet UI Overrides (Dark Theme)
+        ---------------------------------------------- */
+        .leaflet-bar { 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important; 
+            border: 1px solid var(--panel-border) !important; 
+            border-radius: 8px !important; overflow: hidden; 
         }
-        
-        #loading {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            z-index: 1000; background: var(--surface); padding: 24px 32px; 
-            border-radius: 16px; font-size: 15px; color: var(--text-main);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); 
-            border: 1px solid var(--border); text-align: center; line-height: 1.6; max-width: 600px;
-        }
-
-        .leaflet-bar { box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important; border: 1px solid var(--border) !important; border-radius: 6px !important; overflow: hidden; }
         .leaflet-touch .leaflet-bar a, .leaflet-bar a {
-            width: 26px !important; height: 26px !important; line-height: 26px !important; font-size: 15px !important;
-            font-weight: 500 !important; color: var(--text-main) !important; background-color: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(4px) !important; transition: all 0.2s ease !important;
+            width: 32px !important; height: 32px !important; line-height: 32px !important; font-size: 16px !important;
+            font-weight: 600 !important; color: var(--text-main) !important; background-color: var(--panel-bg) !important;
+            backdrop-filter: blur(12px) !important; transition: all 0.2s ease !important;
+            border-bottom: 1px solid rgba(255,255,255,0.05) !important;
         }
-        .leaflet-bar a:hover { background-color: var(--surface) !important; color: var(--primary) !important; }
+        .leaflet-bar a:hover { background-color: #475569 !important; color: #ffffff !important; }
 
-        .leaflet-popup-content-wrapper { border-radius: 10px; box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.15); padding: 0; }
-        .leaflet-popup-content { margin: 12px 14px; font-family: 'Inter', sans-serif; }
-        
-        .card-title { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; display: block; line-height: 1.3; }
-        .card-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 11px; }
+        .leaflet-control-scale-line {
+            background: var(--panel-bg) !important; backdrop-filter: blur(12px) !important;
+            border: 1px solid var(--panel-border) !important; border-top: none !important; border-radius: 0 0 6px 6px !important;
+            color: var(--text-main) !important; font-family: 'Inter', sans-serif !important;
+            font-size: 10px !important; font-weight: 600 !important; text-shadow: none !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important; padding: 4px 8px !important; line-height: 1.2 !important;
+        }
+        .leaflet-control-scale-line:not(:first-child) {
+            border-top: 1px solid var(--panel-border) !important; border-bottom: none !important;
+            border-radius: 6px 6px 0 0 !important; margin-top: 6px !important;
+        }
+
+        /* -------------------------------------------
+           Popups & Legends
+        ---------------------------------------------- */
+        .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); padding: 0; border: 1px solid #e2e8f0; }
+        .leaflet-popup-content { margin: 16px; font-family: 'Inter', sans-serif; }
+        .card-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 10px; display: block; line-height: 1.3; }
+        .card-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 11px; }
         .card-row:last-child { border-bottom: none; }
-        .card-label { color: var(--text-muted); font-weight: 500; }
-        .card-value { color: var(--text-main); font-weight: 500; text-align: right; }
-        
-        .badge { display: inline-block; padding: 3px 8px; border-radius: 9999px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-label { color: #64748b; font-weight: 600; }
+        .card-value { color: #0f172a; font-weight: 600; text-align: right; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-available { background-color: var(--success-bg); color: var(--success-text); }
         .badge-default { background-color: #f1f5f9; color: #475569; }
 
-        .custom-evac-icon div { transition: transform 0.2s ease; }
-        .custom-evac-icon div:hover { transform: scale(1.1); }
-
         .info.legend {
-            background: rgba(255, 255, 255, 0.85); padding: 12px 16px; border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(4px); border: 1px solid var(--border);
-            font-family: 'Inter', sans-serif; color: var(--text-main);
+            background: var(--surface); padding: 16px 20px; border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            border: 1px solid #e2e8f0; font-family: 'Inter', sans-serif; color: #0f172a;
+            transition: all 0.3s ease;
         }
-        .legend-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-        .legend-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: 500; }
+        .info.legend:hover { transform: translateY(-2px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2); }
+        .legend-title { font-size: 12px; font-weight: 700; margin-bottom: 12px; display: block; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b;}
+        .legend-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 12px; font-weight: 600; transition: transform 0.2s ease;}
+        .legend-item:hover { transform: translateX(4px); }
         .legend-item:last-child { margin-bottom: 0; }
-        .legend-icon { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); margin-right: 10px; }
+        .legend-icon { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-right: 12px; }
 
-        .leaflet-control-scale-line {
-            background: rgba(255, 255, 255, 0.85) !important; backdrop-filter: blur(4px) !important;
-            border: 2px solid var(--primary) !important; border-top: none !important; border-radius: 0 0 4px 4px !important;
-            color: var(--text-main) !important; font-family: 'Inter', sans-serif !important;
-            font-size: 11px !important; font-weight: 600 !important; text-shadow: none !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important; padding: 4px 6px !important; line-height: 1.2 !important;
+        .custom-evac-icon div { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .custom-evac-icon div:hover { transform: scale(1.15) translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important; }
+
+        /* -------------------------------------------
+           Smooth Buffer Animation CSS
+        ---------------------------------------------- */
+        .buffer-anim {
+            transition: fill-opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), 
+                        stroke-opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
-        .leaflet-control-scale-line:not(:first-child) {
-            border-top: 2px solid var(--primary) !important; border-bottom: none !important;
-            border-radius: 4px 4px 0 0 !important; margin-top: 4px !important;
+
+        #loading {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 1000; background: var(--surface); padding: 24px 32px; 
+            border-radius: 16px; font-size: 15px; color: #0f172a;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+            border: 1px solid #e2e8f0; text-align: center; line-height: 1.6; max-width: 600px;
         }
     </style>
 </head>
@@ -202,7 +211,7 @@
 
     <div id="loading">
         <div id="spinner-container" style="margin-bottom: 8px;">
-            <svg style="animation: spin 1s linear infinite; height: 24px; width: 24px; color: #0f172a; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <svg style="animation: spin 1s linear infinite; height: 24px; width: 24px; color: #3b82f6; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         </div>
         <strong id="loading-title">Syncing Live Data</strong><br>
         <span id="loading-desc" style="color: #64748b; font-size: 13px;">Pulling from Google Sheets...</span>
@@ -212,21 +221,17 @@
         window.onerror = function(message, source, lineno) {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "❌ <b style='color: #ef4444;'>CRITICAL SYNTAX ERROR:</b>";
-            document.getElementById('loading-desc').innerHTML = "<b>" + message + "</b><br><br>Check around line <b>" + lineno + "</b> in your code. You likely accidentally deleted a quotation mark (\") or a semicolon (;) when pasting your link.";
+            document.getElementById('loading-desc').innerHTML = "<b>" + message + "</b><br><br>Check around line <b>" + lineno + "</b>. A quotation mark (\") or semicolon (;) was likely deleted.";
             return true;
         };
     </script>
 
-    <div id="compass">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="50,5 65,50 50,95 35,50" fill="#cbd5e1"/><polygon points="50,5 65,50 50,50" fill="#ef4444"/><polygon points="50,5 50,50 35,50" fill="#dc2626"/><polygon points="50,95 65,50 50,50" fill="#94a3b8"/><polygon points="50,95 50,50 35,50" fill="#64748b"/><text x="50" y="32" fill="white" font-family="Inter" font-size="16" font-weight="bold" text-anchor="middle">N</text>
-        </svg>
-    </div>
-
     <div id="search-box">
         <div class="multi-select-container">
+            <span class="ui-label">FILTER</span>
             <div class="multi-select-button" id="multiSelectBtn" onclick="toggleDropdown(event)">
-                All Facilities <span>▾</span>
+                All Facilities 
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
             <div class="multi-select-dropdown" id="typeDropdown" onclick="event.stopPropagation()">
                 <label><input type="checkbox" value="EVACUATION CENTER" checked onchange="filterMap()"> <span class="checkmark"></span> Evacuation Center</label>
@@ -238,15 +243,17 @@
             </div>
         </div>
 
-        <input type="text" id="searchInput" placeholder="Search municipality or name...">
-        <button class="search-btn" onclick="filterMap()">Search</button>
+        <div style="display:flex; align-items:center;">
+            <span class="ui-label">SEARCH</span>
+            <input type="text" id="searchInput" placeholder="Location or name...">
+        </div>
         
         <div class="toggle-container">
+            <span class="ui-label" style="margin-right: 6px;">BUFFER ZONE</span>
             <label class="switch">
                 <input type="checkbox" id="bufferToggle" onchange="filterMap()">
                 <span class="slider"></span>
             </label>
-            <label for="bufferToggle" class="toggle-label">BUFFER ZONE</label>
         </div>
     </div>
 
@@ -269,10 +276,11 @@
             }
         });
 
+        // Basemap switched to CartoDB Positron (Light/Clean map matching your request)
         var map = L.map('map', { zoomControl: false }).setView([15.58, 120.59], 10);
         L.control.zoom({ position: 'topleft' }).addTo(map);
         L.control.scale({ imperial: true, metric: true, position: 'bottomleft' }).addTo(map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
 
         var legend = L.control({position: 'bottomright'});
         legend.onAdd = function (map) {
@@ -291,9 +299,9 @@
                 html += `
                     <div class="legend-item">
                         <div class="legend-icon" style="background-color: ${cat.color};">
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="white">${cat.svg}</svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="white">${cat.svg}</svg>
                         </div>
-                        <span style="font-size: 11px;">${cat.name}</span>
+                        <span>${cat.name}</span>
                     </div>`;
             });
             div.innerHTML = html;
@@ -323,13 +331,13 @@
             }
 
             let leafletIcon = L.divIcon({
-                html: `<div style="background-color: ${bgColor}; color: white; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3);">
-                          <svg width="8" height="8" viewBox="0 0 24 24" fill="white">${svgPath}</svg>
+                html: `<div style="background-color: ${bgColor}; color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="white">${svgPath}</svg>
                        </div>`,
                 className: 'custom-evac-icon',
-                iconSize: [18, 18],
-                iconAnchor: [9, 9],
-                popupAnchor: [0, -9]
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+                popupAnchor: [0, -10]
             });
 
             return { icon: leafletIcon, color: bgColor };
@@ -347,7 +355,7 @@
         if (sheetCsvUrl === "YOUR_SHEET_2_CSV_PUBLISH_LINK_HERE" || sheetCsvUrl === "") {
             document.getElementById('spinner-container').style.display = 'none';
             document.getElementById('loading-title').innerHTML = "⚠️ <b>Action Required:</b>";
-            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 348 of the code.";
+            document.getElementById('loading-desc').innerHTML = "Please paste your Google Sheets link into line 389 of the code.";
         } else {
             Papa.parse(sheetCsvUrl, {
                 download: true, header: true, skipEmptyLines: true,
@@ -395,20 +403,26 @@
                             
                             var marker = L.marker([lat, lng], { icon: iconData.icon }).bindPopup(popupText, { minWidth: 220 });
                             
+                            // Buffer is generated immediately but set to ZERO opacity so it is hidden.
+                            // Adding the 'buffer-anim' class allows CSS to smoothly fade it in/out later.
                             var bufferCircle = L.circle([lat, lng], {
                                 radius: 1000, 
                                 color: iconData.color, 
-                                opacity: 0.7, 
-                                weight: 2,
+                                opacity: 0, 
+                                weight: 1.5,
                                 fillColor: iconData.color, 
-                                fillOpacity: 0.2, 
-                                interactive: false 
+                                fillOpacity: 0, 
+                                interactive: false,
+                                className: 'buffer-anim'
                             });
 
                             marker.searchData = { name: name, mun: mun, lat: lat, lng: lng, type: type };
                             marker.bufferCircle = bufferCircle;
                             
+                            // Add both to map immediately
                             marker.addTo(map);
+                            bufferCircle.addTo(map);
+                            
                             markers.push(marker);
                         }
                     });
@@ -434,17 +448,15 @@
             var totalBoxes = document.querySelectorAll('#typeDropdown input').length;
             var btnText = document.getElementById('multiSelectBtn');
             if (selectedTypes.length === totalBoxes) {
-                btnText.innerHTML = "All Facilities <span>▾</span>";
+                btnText.innerHTML = 'All Facilities <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
             } else if (selectedTypes.length === 0) {
-                btnText.innerHTML = "None Selected <span>▾</span>";
+                btnText.innerHTML = 'None Selected <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
             } else {
-                btnText.innerHTML = selectedTypes.length + " Selected <span>▾</span>";
+                btnText.innerHTML = selectedTypes.length + ' Selected <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
             }
 
-            var currentZoom = map.getZoom();
             var firstMatch = null;
             var isBufferEnabled = document.getElementById('bufferToggle').checked;
-            var showBuffers = isBufferEnabled && (currentZoom >= 14); 
             
             markers.forEach(function(marker) {
                 var itm = marker.searchData;
@@ -452,28 +464,29 @@
                 var mType = selectedTypes.includes(itm.type);
 
                 if (mText && mType) {
-                    map.addLayer(marker);
+                    if (!map.hasLayer(marker)) map.addLayer(marker);
                     
-                    if (showBuffers) {
-                        map.addLayer(marker.bufferCircle);
+                    // Smoothly animate the buffer in or out based on the toggle
+                    if (isBufferEnabled) {
+                        marker.bufferCircle.setStyle({ opacity: 0.4, fillOpacity: 0.1 });
                     } else {
-                        map.removeLayer(marker.bufferCircle);
+                        marker.bufferCircle.setStyle({ opacity: 0, fillOpacity: 0 });
                     }
                     
                     if (!firstMatch && query.trim() !== "") firstMatch = marker;
                 } else {
-                    map.removeLayer(marker);
-                    map.removeLayer(marker.bufferCircle); 
+                    if (map.hasLayer(marker)) map.removeLayer(marker);
+                    // Hide buffer if marker is filtered out
+                    marker.bufferCircle.setStyle({ opacity: 0, fillOpacity: 0 }); 
                 }
             });
             
             if (firstMatch) { map.setView([firstMatch.searchData.lat, firstMatch.searchData.lng], 14); firstMatch.openPopup(); }
         }
 
-        document.getElementById('searchInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') filterMap(); });
+        // Live filtering as user types
+        document.getElementById('searchInput').addEventListener('input', function () { filterMap(); });
         
-        map.on('zoomend', function() { filterMap(); });
-
         setTimeout(() => map.invalidateSize(), 500);
     </script>
 </body>
